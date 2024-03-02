@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "lexer.h"
+#include "parser.h"
 
 int main(int argc, char* argv[]) {
     std::vector<std::string> commandLineArgs(argc - 1);
@@ -51,15 +52,28 @@ int main(int argc, char* argv[]) {
     fin.read(input.data(), fileSize);
 
     // Pass 1: Lexing
-    auto res = lexer::lex(input);
+    auto tokens = lexer::lex(input);
     size_t lineno = 1;
     std::cout << lineno << ": ";
-    for (const auto& sp : res) {
+    for (const auto& sp : tokens) {
         std::cout << sp->toString() << ' ';
-        if (sp->tokenType() == lexer::ENDL) {
-            std::cout << '\n';
-            lineno++;
-            std::cout << lineno << ": ";
+        if (sp->lineno > lineno) {
+            for (size_t i = lineno + 1; i <= sp->lineno; i++) {
+                std::cout << '\n' << i << ": ";
+            }
+            lineno = sp->lineno;
         }
+    }
+    std::cout << "\n";
+
+    // Pass 2: Parsing
+    auto [varDefs, rules] = parser::parse(tokens);
+    std::cout << "Variable Definitions\n";
+    for (const auto& vd : varDefs) {
+        std::cout << vd.toString() << "\n";
+    }
+    std::cout << "Rules:\n";
+    for (const auto& r : rules) {
+        std::cout << r.toString() << "\n";
     }
 }
