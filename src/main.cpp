@@ -50,6 +50,7 @@ int main(int argc, char* argv[]) {
     fin.seekg(0, std::ios::beg);
     std::string input(fileSize, 0);
     fin.read(input.data(), fileSize);
+    input.resize(fin.gcount()); // In Windows, "\r\n" will be transformed into "\n", so bytes read can be less than file size
 
     // Pass 1: Lexing
     auto tokens = lexer::lex(input);

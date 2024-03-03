@@ -215,10 +215,6 @@ lexEndl(std::string_view charStream, size_t lineno) {
         return {
             {std::make_shared<Endl>(lineno), charStream.substr(1), lineno + 1}};
     }
-    if (charStream.starts_with("\r\n")) {
-        return {
-            {std::make_shared<Endl>(lineno), charStream.substr(2), lineno + 1}};
-    }
     return {};
 }
 
